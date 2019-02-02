@@ -14,3 +14,6 @@ coverage::
 lint::
 	@${GOBIN}/golint ./...
 
+fmt::
+	@gofmt -s -w .
+
