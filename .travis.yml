@@ -9,7 +9,15 @@ env:
 install:
   - make init
   - go get github.com/mattn/goveralls
-  - apt-get install fossil cvs darcs
+  - sudo apt-get update
+  - sudo apt-get install fossil cvs darcs
+  - git --version
+  - hg --version
+  - svn --version
+  - cvs --version
+  - darcs --version
+  - fossil version
+  - bzr --version
 
 script:
   - make test
