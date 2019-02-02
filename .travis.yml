@@ -7,9 +7,9 @@ env:
   - GO111MODULE=on
 
 install:
-  - go version
   - make init
   - go get github.com/mattn/goveralls
+  - apt-get install fossil cvs darcs
 
 script:
   - make test
