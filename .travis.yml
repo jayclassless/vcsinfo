@@ -1,0 +1,14 @@
+language: go
+
+go:
+  - tip
+
+install:
+  - go version
+  - make init
+  - go get github.com/mattn/goveralls
+
+script:
+  - make test
+  - $GOPATH/bin/goveralls -service=travis-ci -coverprofile=coverage.out
+
