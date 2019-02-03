@@ -43,8 +43,8 @@ func rmdir(dir string) {
 func run(dir string, command ...string) {
 	cmd := exec.Command(command[0], command[1:]...)
 	cmd.Dir = dir
-	err := cmd.Run()
+	out, err := cmd.CombinedOutput()
 	if err != nil {
-		Fail(fmt.Sprintf("Failed to execute %s %+v", command, err))
+		Fail(fmt.Sprintf("Failed to execute %s %+v\n%s", command, err, out))
 	}
 }
