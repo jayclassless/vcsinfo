@@ -64,7 +64,7 @@ var (
 
   Environment Variables:
     VCSINFO_FORMAT
-      The format string to use to generate output (if not explictly specified
+      The format string to use to generate output (if not explicitly specified
       via the command line).
 
     VCSINFO_NEW
