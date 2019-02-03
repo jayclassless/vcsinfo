@@ -115,7 +115,7 @@ var _ = Describe("Darcs", func() {
 		It("sees modified files", func() {
 			writeFile(dir, "foo", "bar")
 			run(dir, "darcs", "add", "foo")
-			run(dir, "darcs", "record", "--no-interactive", "-m", "blah")
+			run(dir, "darcs", "record", "--author", "fake@example.com", "--no-interactive", "-m", "blah")
 
 			// Darcs "file has been updated" detection is poor. If we update the file too quickly, it doesn't see it as a change
 			time.Sleep(1001 * time.Millisecond)
@@ -135,7 +135,7 @@ var _ = Describe("Darcs", func() {
 		It("sees deleted files", func() {
 			writeFile(dir, "foo", "bar")
 			run(dir, "darcs", "add", "foo")
-			run(dir, "darcs", "record", "--no-interactive", "-m", "blah")
+			run(dir, "darcs", "record", "--author", "fake@example.com", "--no-interactive", "-m", "blah")
 			rm(dir, "foo")
 			info, err := probe.GatherInfo(dir)
 			Expect(err).To(BeEmpty())
