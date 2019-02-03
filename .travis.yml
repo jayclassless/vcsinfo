@@ -1,3 +1,5 @@
+dist: xenial
+
 language: go
 
 go:
@@ -18,6 +20,7 @@ install:
   - darcs --version
   - fossil version
   - bzr --version
+  - bzr whoami "Fake Tester <fake@example.com>"
 
 script:
   - make test
