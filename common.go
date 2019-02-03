@@ -11,34 +11,82 @@ import (
 	"strings"
 )
 
+// VcsInfo contains the results of a VcsProbe's examination of a repository.
 type VcsInfo struct {
-	VcsName        string `json:"vcs_name" xml:"vcsName"`
-	Path           string `json:"path" xml:"path"`
+	// The name of the VCS found.
+	VcsName string `json:"vcs_name" xml:"vcsName"`
+
+	// The path that was examined.
+	Path string `json:"path" xml:"path"`
+
+	// The root directory of the repository that was examined.
 	RepositoryRoot string `json:"repository_root" xml:"repositoryRoot"`
-	ShortHash      string `json:"short_hash" xml:"shortHash"`
-	Hash           string `json:"hash" xml:"hash"`
-	Revision       string `json:"revision" xml:"revision"`
-	Branch         string `json:"branch" xml:"branch"`
-	HasStaged      bool   `json:"has_staged" xml:"hasStaged"`
-	HasModified    bool   `json:"has_modified" xml:"hasModified"`
-	HasNew         bool   `json:"has_new" xml:"hasNew"`
+
+	// The "short" version of the Hash of the current changeset, if the VCS has
+	// such a concept.
+	ShortHash string `json:"short_hash" xml:"shortHash"`
+
+	// The hash of the current changeset.
+	Hash string `json:"hash" xml:"hash"`
+
+	// The revision ID of the current changeset.
+	Revision string `json:"revision" xml:"revision"`
+
+	// The current branch.
+	Branch string `json:"branch" xml:"branch"`
+
+	// Indicates whether or not there are files staged for commit.
+	HasStaged bool `json:"has_staged" xml:"hasStaged"`
+
+	// Indicates whether or not there are added/modified/deleted files.
+	HasModified bool `json:"has_modified" xml:"hasModified"`
+
+	// Indicates whether or not there are untracked files.
+	HasNew bool `json:"has_new" xml:"hasNew"`
 }
 
+// FormatOptions contains the options that govern how format strings are
+// produced.
 type FormatOptions struct {
-	HasStaged   string
+	// The string displayed for the staged file indicator.
+	HasStaged string
+
+	// The string displayed for the modified file indicator.
 	HasModified string
-	HasNew      string
-	Unknown     string
+
+	// The string displayed for the untracked file indicator.
+	HasNew string
+
+	// The string displayed for hash/rev/branch tokens when the information
+	// they represent could not be found.
+	Unknown string
 }
 
+// VcsProbe represents a probe that is capable of examining the current state
+// of a VCS repository.
 type VcsProbe interface {
+	// Name returns the human-facing name of the probe.
 	Name() string
+
+	// DefaultFormat returns the default format string to use for the
+	// repositories.
 	DefaultFormat() string
+
+	// IsAvailable indicates whether or not this probe has the
+	// tools/environment necessary to operate.
 	IsAvailable() (bool, error)
+
+	// IsRepositoryRoot identifies whether or not the specified path is the root
+	// of a repository this probe can handle.
 	IsRepositoryRoot(path string) (bool, error)
+
+	// GatherInfo extracts and returns VCS information for the repository at
+	// the specified path.
 	GatherInfo(path string) (VcsInfo, []error)
 }
 
+// GetAvailableProbes returns all probes in the VCSInfo package that can used
+// in the current environment.
 func GetAvailableProbes() ([]VcsProbe, error) {
 	allProbes := []VcsProbe{
 		GitProbe{},
@@ -65,6 +113,8 @@ func GetAvailableProbes() ([]VcsProbe, error) {
 	return availableProbes, nil
 }
 
+// FindProbeForPath identifies which of the specified VcsProbes is appropriate
+// to use to examine the specified path.
 func FindProbeForPath(path string, probes []VcsProbe) (VcsProbe, error) {
 	var goodProbe VcsProbe
 
@@ -86,16 +136,20 @@ func FindProbeForPath(path string, probes []VcsProbe) (VcsProbe, error) {
 	return goodProbe, err
 }
 
-func InfoToJson(info VcsInfo) (string, error) {
+// InfoToJSON renders the VcsInfo as a JSON object.
+func InfoToJSON(info VcsInfo) (string, error) {
 	out, err := json.Marshal(info)
 	return string(out[:]), err
 }
 
-func InfoToXml(info VcsInfo) (string, error) {
+// InfoToXML renders the VcsInfo as an XML document.
+func InfoToXML(info VcsInfo) (string, error) {
 	out, err := xml.Marshal(info)
 	return string(out[:]), err
 }
 
+// GetDefaultFormatOptions returns a FormatOptions initialized with the default
+// configuration.
 func GetDefaultFormatOptions() FormatOptions {
 	return FormatOptions{
 		HasStaged:   "*",
@@ -105,9 +159,11 @@ func GetDefaultFormatOptions() FormatOptions {
 	}
 }
 
+// InfoToString renders the VcsInfo according the specified format string and
+// options.
 func InfoToString(info VcsInfo, format string, options FormatOptions) (string, error) {
 	var buf bytes.Buffer
-	var eof rune = 0
+	var eof rune
 
 	reader := bufio.NewReader(strings.NewReader(format))
 

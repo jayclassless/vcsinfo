@@ -5,20 +5,28 @@ import (
 	"strings"
 )
 
+// HgProbe is a probe for extracting information out of a Mercurial repository.
 type HgProbe struct{}
 
+// Name returns the human-facing name of the probe.
 func (probe HgProbe) Name() string {
 	return "hg"
 }
 
+// DefaultFormat returns the default format string to use for Mercurial
+// repositories.
 func (probe HgProbe) DefaultFormat() string {
 	return "%n[%b%m%u]"
 }
 
+// IsAvailable indicates whether or not this probe has the tools/environment
+// necessary to operate.
 func (probe HgProbe) IsAvailable() (bool, error) {
 	return commandExists("hg"), nil
 }
 
+// IsRepositoryRoot identifies whether or not the specified path is the root
+// of a Mercurial repository.
 func (probe HgProbe) IsRepositoryRoot(path string) (bool, error) {
 	return dirExists(filepath.Join(path, ".hg"))
 }
@@ -68,6 +76,8 @@ func (probe HgProbe) extractCommitInfo(path string, info *VcsInfo) error {
 	return nil
 }
 
+// GatherInfo extracts and returns VCS information for the Mercurial repository
+// at the specified path.
 func (probe HgProbe) GatherInfo(path string) (VcsInfo, []error) {
 	info := VcsInfo{
 		VcsName: probe.Name(),

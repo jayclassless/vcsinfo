@@ -5,20 +5,27 @@ import (
 	"strings"
 )
 
+// SvnProbe is a probe for extracting information out of an SVN repository.
 type SvnProbe struct{}
 
+// Name returns the human-facing name of the probe.
 func (probe SvnProbe) Name() string {
 	return "svn"
 }
 
+// IsAvailable indicates whether or not this probe has the tools/environment
+// necessary to operate.
 func (probe SvnProbe) IsAvailable() (bool, error) {
 	return commandExists("svn"), nil
 }
 
+// DefaultFormat returns the default format string to use for SVN repositories.
 func (probe SvnProbe) DefaultFormat() string {
 	return "%n[%b%m%u]"
 }
 
+// IsRepositoryRoot identifies whether or not the specified path is the root
+// of an SVN repository.
 func (probe SvnProbe) IsRepositoryRoot(path string) (bool, error) {
 	return dirExists(filepath.Join(path, ".svn"))
 }
@@ -72,6 +79,8 @@ func (probe SvnProbe) extractInfo(path string, info *VcsInfo) error {
 	return nil
 }
 
+// GatherInfo extracts and returns VCS information for the SVN repository at
+// the specified path.
 func (probe SvnProbe) GatherInfo(path string) (VcsInfo, []error) {
 	info := VcsInfo{
 		VcsName: probe.Name(),

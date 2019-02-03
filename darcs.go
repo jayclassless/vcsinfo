@@ -6,20 +6,28 @@ import (
 	"strings"
 )
 
+// DarcsProbe is a probe for extracting information out of a DARCS repository.
 type DarcsProbe struct{}
 
+// Name returns the human-facing name of the probe.
 func (probe DarcsProbe) Name() string {
 	return "darcs"
 }
 
+// DefaultFormat returns the default format string to use for DARCS
+// repositories.
 func (probe DarcsProbe) DefaultFormat() string {
 	return "%n[%b%m%u]"
 }
 
+// IsAvailable indicates whether or not this probe has the tools/environment
+// necessary to operate.
 func (probe DarcsProbe) IsAvailable() (bool, error) {
 	return commandExists("darcs"), nil
 }
 
+// IsRepositoryRoot identifies whether or not the specified path is the root
+// of a DARCS repository.
 func (probe DarcsProbe) IsRepositoryRoot(path string) (bool, error) {
 	return dirExists(filepath.Join(path, "_darcs"))
 }
@@ -63,6 +71,8 @@ func (probe DarcsProbe) extractHash(path string, info *VcsInfo) error {
 	return nil
 }
 
+// GatherInfo extracts and returns VCS information for the DARCS repository at
+// the specified path.
 func (probe DarcsProbe) GatherInfo(path string) (VcsInfo, []error) {
 	info := VcsInfo{
 		VcsName: probe.Name(),

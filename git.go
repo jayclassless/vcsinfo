@@ -4,20 +4,27 @@ import (
 	"path/filepath"
 )
 
+// GitProbe is a probe for extracting information out of a Git repository.
 type GitProbe struct{}
 
+// Name returns the human-facing name of the probe.
 func (probe GitProbe) Name() string {
 	return "git"
 }
 
+// DefaultFormat returns the default format string to use for Git repositories.
 func (probe GitProbe) DefaultFormat() string {
 	return "%n[%b%a%m%u]"
 }
 
+// IsAvailable indicates whether or not this probe has the tools/environment
+// necessary to operate.
 func (probe GitProbe) IsAvailable() (bool, error) {
 	return commandExists("git"), nil
 }
 
+// IsRepositoryRoot identifies whether or not the specified path is the root
+// of a Git repository.
 func (probe GitProbe) IsRepositoryRoot(path string) (bool, error) {
 	return dirExists(filepath.Join(path, ".git"))
 }
@@ -86,6 +93,8 @@ func (probe GitProbe) extractHash(path string, info *VcsInfo) error {
 	return nil
 }
 
+// GatherInfo extracts and returns VCS information for the Git repository at
+// the specified path.
 func (probe GitProbe) GatherInfo(path string) (VcsInfo, []error) {
 	info := VcsInfo{
 		VcsName: probe.Name(),

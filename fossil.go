@@ -5,20 +5,28 @@ import (
 	"strings"
 )
 
+// FossilProbe is a probe for extracting information out of a Fossil repository.
 type FossilProbe struct{}
 
+// Name returns the human-facing name of the probe.
 func (probe FossilProbe) Name() string {
 	return "fossil"
 }
 
+// DefaultFormat returns the default format string to use for Fossil
+// repositories.
 func (probe FossilProbe) DefaultFormat() string {
 	return "%n[%b%m%u]"
 }
 
+// IsAvailable indicates whether or not this probe has the tools/environment
+// necessary to operate.
 func (probe FossilProbe) IsAvailable() (bool, error) {
 	return commandExists("fossil"), nil
 }
 
+// IsRepositoryRoot identifies whether or not the specified path is the root
+// of a Fossil repository.
 func (probe FossilProbe) IsRepositoryRoot(path string) (bool, error) {
 	return fileExists(filepath.Join(path, ".fslckout"))
 }
@@ -82,6 +90,8 @@ func (probe FossilProbe) extractExtras(path string, info *VcsInfo) error {
 	return nil
 }
 
+// GatherInfo extracts and returns VCS information for the Fossil repository at
+// the specified path.
 func (probe FossilProbe) GatherInfo(path string) (VcsInfo, []error) {
 	info := VcsInfo{
 		VcsName: probe.Name(),

@@ -39,7 +39,7 @@ var (
 		"if hard failures are encountered, complain loudly instead of silently outputting nothing",
 	).Bool()
 
-	HELP = `Retrieves and outputs basic information about the status of a VCS repository.
+	helpText = `Retrieves and outputs basic information about the status of a VCS repository.
 
   Format String Tokens:
     %%n  VCS name
@@ -119,10 +119,10 @@ func determinePath() (string, error) {
 
 func produceOutput(info vcsinfo.VcsInfo, probe vcsinfo.VcsProbe) (string, error) {
 	if *json {
-		return vcsinfo.InfoToJson(info)
+		return vcsinfo.InfoToJSON(info)
 	}
 	if *xml {
-		return vcsinfo.InfoToXml(info)
+		return vcsinfo.InfoToXML(info)
 	}
 
 	f := *format
@@ -196,7 +196,7 @@ func main() {
 	failIfError(err, "Could not determine available VCS probes")
 
 	app.Version(version)
-	app.Help = fmt.Sprintf(HELP, makeDefaultFormatHelp(allProbes))
+	app.Help = fmt.Sprintf(helpText, makeDefaultFormatHelp(allProbes))
 	app.HelpFlag.Short('h')
 	kingpin.MustParse(app.Parse(os.Args[1:]))
 

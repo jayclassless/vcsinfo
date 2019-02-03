@@ -5,20 +5,28 @@ import (
 	"strings"
 )
 
+// BzrProbe is a probe for extracting information out of an Bazaar repository.
 type BzrProbe struct{}
 
+// Name returns the human-facing name of the probe.
 func (probe BzrProbe) Name() string {
 	return "bzr"
 }
 
+// DefaultFormat returns the default format string to use for Bazaar
+// repositories.
 func (probe BzrProbe) DefaultFormat() string {
 	return "%n[%b%m%u]"
 }
 
+// IsAvailable indicates whether or not this probe has the tools/environment
+// necessary to operate.
 func (probe BzrProbe) IsAvailable() (bool, error) {
 	return commandExists("bzr"), nil
 }
 
+// IsRepositoryRoot identifies whether or not the specified path is the root
+// of an Bazaar repository.
 func (probe BzrProbe) IsRepositoryRoot(path string) (bool, error) {
 	return dirExists(filepath.Join(path, ".bzr/branch"))
 }
@@ -71,6 +79,8 @@ func (probe BzrProbe) extractCommitInfo(path string, info *VcsInfo) error {
 	return nil
 }
 
+// GatherInfo extracts and returns VCS information for the Bazaar repository at
+// the specified path.
 func (probe BzrProbe) GatherInfo(path string) (VcsInfo, []error) {
 	info := VcsInfo{
 		VcsName: probe.Name(),

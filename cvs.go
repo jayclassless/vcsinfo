@@ -5,20 +5,27 @@ import (
 	"strings"
 )
 
+// CvsProbe is a probe for extracting information out of a CVS  repository.
 type CvsProbe struct{}
 
+// Name returns the human-facing name of the probe.
 func (probe CvsProbe) Name() string {
 	return "cvs"
 }
 
+// DefaultFormat returns the default format string to use for CVS repositories.
 func (probe CvsProbe) DefaultFormat() string {
 	return "%n[%e%m%u]"
 }
 
+// IsAvailable indicates whether or not this probe has the tools/environment
+// necessary to operate.
 func (probe CvsProbe) IsAvailable() (bool, error) {
 	return commandExists("cvs"), nil
 }
 
+// IsRepositoryRoot identifies whether or not the specified path is the root
+// of a CVS repository.
 func (probe CvsProbe) IsRepositoryRoot(path string) (bool, error) {
 	exists, err := dirExists(filepath.Join(path, "CVS"))
 	if !exists || err != nil {
@@ -79,6 +86,8 @@ func (probe CvsProbe) extractNew(path string, info *VcsInfo) error {
 	return nil
 }
 
+// GatherInfo extracts and returns VCS information for the CVS repository at
+// the specified path.
 func (probe CvsProbe) GatherInfo(path string) (VcsInfo, []error) {
 	info := VcsInfo{
 		VcsName: probe.Name(),
