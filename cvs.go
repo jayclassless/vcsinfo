@@ -33,6 +33,52 @@ func (probe CvsProbe) IsRepositoryRoot(path string) (bool, error) {
 	return true, nil
 }
 
+func (probe CvsProbe) extractStatus(path string, info *VcsInfo) error {
+	out, err := runCommand(path, "cvs", "status")
+	if err != nil {
+		if len(out) > 0 {
+			// We're likely in a new directory that hasn't been added yet
+			if strings.HasPrefix(out[0], "cvs status: No CVSROOT specified!") {
+				return nil
+			}
+		}
+		return err
+	}
+
+	for _, line := range out {
+		if strings.HasSuffix(line, "Locally Added") ||
+			strings.HasSuffix(line, "Locally Modified") ||
+			strings.HasSuffix(line, "Locally Removed") ||
+			strings.HasSuffix(line, "Needs Checkout") {
+			info.HasModified = true
+		}
+	}
+
+	return nil
+}
+
+func (probe CvsProbe) extractNew(path string, info *VcsInfo) error {
+	out, err := runCommand(path, "cvs", "-qn", "update")
+	if err != nil {
+		if len(out) > 0 {
+			// We're likely in a new directory that hasn't been added yet
+			if strings.HasPrefix(out[0], "cvs update: No CVSROOT specified!") {
+				return nil
+			}
+		}
+		return err
+	}
+
+	for _, line := range out {
+		if strings.HasPrefix(line, "?") {
+			info.HasNew = true
+			return nil
+		}
+	}
+
+	return nil
+}
+
 func (probe CvsProbe) GatherInfo(path string) (VcsInfo, []error) {
 	info := VcsInfo{
 		VcsName: probe.Name(),
@@ -47,49 +93,11 @@ func (probe CvsProbe) GatherInfo(path string) (VcsInfo, []error) {
 
 	errors := waitGroup(
 		func() error {
-			out, err := runCommand(path, "cvs", "status")
-			if err != nil {
-				if len(out) > 0 {
-					// We're likely in a new directory that hasn't been added yet
-					if strings.HasPrefix(out[0], "cvs status: No CVSROOT specified!") {
-						return nil
-					}
-				}
-				return err
-			}
-
-			for _, line := range out {
-				if strings.HasSuffix(line, "Locally Added") ||
-					strings.HasSuffix(line, "Locally Modified") ||
-					strings.HasSuffix(line, "Locally Removed") ||
-					strings.HasSuffix(line, "Needs Checkout") {
-					info.HasModified = true
-				}
-			}
-
-			return nil
+			return probe.extractStatus(path, &info)
 		},
 
 		func() error {
-			out, err := runCommand(path, "cvs", "-qn", "update")
-			if err != nil {
-				if len(out) > 0 {
-					// We're likely in a new directory that hasn't been added yet
-					if strings.HasPrefix(out[0], "cvs update: No CVSROOT specified!") {
-						return nil
-					}
-				}
-				return err
-			}
-
-			for _, line := range out {
-				if strings.HasPrefix(line, "?") {
-					info.HasNew = true
-					return nil
-				}
-			}
-
-			return nil
+			return probe.extractNew(path, &info)
 		},
 	)
 

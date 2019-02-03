@@ -24,6 +24,45 @@ func (probe DarcsProbe) IsRepositoryRoot(path string) (bool, error) {
 	return dirExists(filepath.Join(path, "_darcs"))
 }
 
+func (probe DarcsProbe) extractStatus(path string, info *VcsInfo) error {
+	out, err := runCommand(path, "darcs", "whatsnew", "--look-for-adds", "--summary")
+	if err != nil {
+		if len(out) > 0 {
+			if out[0] == "No changes!" {
+				return nil
+			}
+		}
+		return err
+	}
+
+	for _, line := range out {
+		flag := line[0:1]
+
+		if flag == "a" {
+			info.HasNew = true
+		} else {
+			info.HasModified = true
+		}
+	}
+
+	return nil
+}
+
+func (probe DarcsProbe) extractHash(path string, info *VcsInfo) error {
+	out, err := runCommand(path, "darcs", "log", "--last", "1")
+	if err != nil {
+		return err
+	}
+
+	for _, line := range out {
+		if strings.HasPrefix(line, "patch ") {
+			info.Hash = line[6:]
+		}
+	}
+
+	return nil
+}
+
 func (probe DarcsProbe) GatherInfo(path string) (VcsInfo, []error) {
 	info := VcsInfo{
 		VcsName: probe.Name(),
@@ -39,42 +78,11 @@ func (probe DarcsProbe) GatherInfo(path string) (VcsInfo, []error) {
 
 	errors := waitGroup(
 		func() error {
-			out, err := runCommand(path, "darcs", "whatsnew", "--look-for-adds", "--summary")
-			if err != nil {
-				if len(out) > 0 {
-					if out[0] == "No changes!" {
-						return nil
-					}
-				}
-				return err
-			}
-
-			for _, line := range out {
-				flag := line[0:1]
-
-				if flag == "a" {
-					info.HasNew = true
-				} else {
-					info.HasModified = true
-				}
-			}
-
-			return nil
+			return probe.extractStatus(path, &info)
 		},
 
 		func() error {
-			out, err := runCommand(path, "darcs", "log", "--last", "1")
-			if err != nil {
-				return err
-			}
-
-			for _, line := range out {
-				if strings.HasPrefix(line, "patch ") {
-					info.Hash = line[6:]
-				}
-			}
-
-			return nil
+			return probe.extractHash(path, &info)
 		},
 	)
 

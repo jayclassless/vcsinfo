@@ -23,6 +23,55 @@ func (probe SvnProbe) IsRepositoryRoot(path string) (bool, error) {
 	return dirExists(filepath.Join(path, ".svn"))
 }
 
+func (probe SvnProbe) extractStatus(path string, info *VcsInfo) error {
+	out, err := runCommand(path, "svn", "status")
+	if err != nil {
+		return err
+	}
+
+	for _, line := range out {
+		item, props := line[0:1], line[1:2]
+
+		if item == "?" {
+			info.HasNew = true
+		} else if item != " " || props != " " {
+			info.HasModified = true
+		}
+	}
+
+	return nil
+}
+
+func (probe SvnProbe) extractInfo(path string, info *VcsInfo) error {
+	out, err := runCommand(path, "svn", "info")
+	if err != nil {
+		if len(out) > 0 {
+			// We're likely in a new directory that hasn't been added yet
+			if strings.HasPrefix(out[len(out)-1], "svn: E200009") {
+				return nil
+			}
+		}
+		return err
+	}
+
+	for _, line := range out {
+		if strings.HasPrefix(line, "Relative URL: ^") {
+			parts := strings.SplitN(line, "^", 2)
+			if parts[1] == "/trunk" {
+				info.Branch = "trunk"
+			} else if strings.HasPrefix(parts[1], "/branches/") {
+				info.Branch = parts[1][10:]
+			}
+
+		} else if strings.HasPrefix(line, "Last Changed Rev: ") {
+			parts := strings.SplitN(line, ": ", 2)
+			info.Revision = parts[1]
+		}
+	}
+
+	return nil
+}
+
 func (probe SvnProbe) GatherInfo(path string) (VcsInfo, []error) {
 	info := VcsInfo{
 		VcsName: probe.Name(),
@@ -37,60 +86,11 @@ func (probe SvnProbe) GatherInfo(path string) (VcsInfo, []error) {
 
 	errors := waitGroup(
 		func() error {
-			out, err := runCommand(path, "svn", "status")
-			if err != nil {
-				return err
-			}
-
-			for _, line := range out {
-				item, props := line[0:1], line[1:2]
-
-				if item == "?" {
-					info.HasNew = true
-				} else if item != " " || props != " " {
-					info.HasModified = true
-				}
-			}
-
-			return nil
+			return probe.extractStatus(path, &info)
 		},
 
 		func() error {
-			out, err := runCommand(path, "svn", "info")
-			if err != nil {
-				if len(out) > 0 {
-					// We're likely in a new directory that hasn't been added yet
-					if strings.HasPrefix(out[len(out)-1], "svn: E200009") {
-						return nil
-					}
-				}
-				return err
-			}
-
-			for _, line := range out {
-				if strings.HasPrefix(line, "Relative URL: ^") {
-					parts := strings.Split(line, "^")
-					if len(parts) != 2 {
-						continue
-					}
-
-					if parts[1] == "/trunk" {
-						info.Branch = "trunk"
-					} else if strings.HasPrefix(parts[1], "/branches/") {
-						info.Branch = parts[1][10:]
-					}
-
-				} else if strings.HasPrefix(line, "Last Changed Rev: ") {
-					parts := strings.Split(line, ": ")
-					if len(parts) != 2 {
-						continue
-					}
-
-					info.Revision = parts[1]
-				}
-			}
-
-			return nil
+			return probe.extractInfo(path, &info)
 		},
 	)
 
