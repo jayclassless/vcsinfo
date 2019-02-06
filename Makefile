@@ -5,6 +5,7 @@ init::
 	@go get github.com/onsi/ginkgo/ginkgo
 	@go get golang.org/x/lint/golint
 	@go get github.com/fzipp/gocyclo
+	@go get github.com/mattn/goveralls
 
 test::
 	@${GOBIN}/ginkgo -p -cover -coverprofile=coverage.out
