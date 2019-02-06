@@ -41,11 +41,6 @@ nfpm:
     - svn
     - mercurial
 
-snapcraft:
-  summary: Retrieve basic information about a VCS repository
-  description: A tool for retrieving/displaying basic information about the status of a VCS repository.
-  publish: false
-
 brew:
   github:
     owner: jayclassless
@@ -53,5 +48,4 @@ brew:
   folder: Formula
   homepage: https://github.com/jayclassless/vcsinfo
   description: A tool for retrieving/displaying basic information about the status of a VCS repository.
-  skip_upload: true
 
