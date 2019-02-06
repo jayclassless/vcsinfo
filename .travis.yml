@@ -23,7 +23,6 @@ env:
 
 install:
   - make init
-  - go get github.com/mattn/goveralls
   - git --version
   - hg --version
   - svn --version
