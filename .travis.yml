@@ -1,5 +1,18 @@
 dist: xenial
 
+addons:
+  apt:
+    update: true
+    packages:
+      - fossil
+      - cvs
+      - darcs
+      - rpm
+      - snapd
+  snaps:
+    - name: snapcraft
+      classic: true
+
 language: go
 
 go:
@@ -7,12 +20,11 @@ go:
 
 env:
   - GO111MODULE=on
+  - PATH=/snap/bin:$PATH
 
 install:
   - make init
   - go get github.com/mattn/goveralls
-  - sudo apt-get update
-  - sudo apt-get install fossil cvs darcs
   - git --version
   - hg --version
   - svn --version
@@ -25,4 +37,11 @@ install:
 script:
   - make test
   - $GOPATH/bin/goveralls -service=travis-ci -coverprofile=coverage.out
+
+deploy:
+  - provider: script
+    skip_cleanup: true
+    script: curl -sL https://git.io/goreleaser | bash
+    on:
+      tags: true
 

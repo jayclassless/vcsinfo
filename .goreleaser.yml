@@ -1,0 +1,57 @@
+before:
+  hooks:
+    - go mod download
+
+builds:
+  - main: ./cmd/vcsinfo.go
+    env:
+      - CGO_ENABLED=0
+      - GO111MODULE=on
+    goos:
+      - linux
+      - darwin
+      - freebsd
+      - openbsd
+      - netbsd
+    ignore:
+      - goos: darwin
+        goarch: 386
+
+archive:
+  replacements:
+    darwin: macos
+
+changelog:
+  skip: true
+
+nfpm:
+  homepage: https://github.com/jayclassless/vcsinfo
+  maintainer: "Jason Simeone <jay@classless.net>"
+  description: A tool for retrieving/displaying basic information about the status of a VCS repository.
+  license: MIT
+  formats:
+    - deb
+    - rpm
+  recommends:
+    - bzr
+    - cvs
+    - git
+    - fossil
+    - darcs
+    - svn
+    - mercurial
+
+snapcraft:
+  summary: Retrieve basic information about a VCS repository
+  description: A tool for retrieving/displaying basic information about the status of a VCS repository.
+  publish: false
+
+brew:
+  github:
+    owner: jayclassless
+    name: homebrew-vcsinfo
+  folder: Formula
+  homepage: https://github.com/jayclassless/vcsinfo
+  description: A tool for retrieving/displaying basic information about the status of a VCS repository.
+  skip_upload: true
+

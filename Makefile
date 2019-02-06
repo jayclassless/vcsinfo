@@ -19,3 +19,9 @@ lint::
 fmt::
 	@gofmt -s -w .
 
+test-publish::
+	@goreleaser release --snapshot --rm-dist
+
+clean::
+	@rm -rf dist coverage.out
+
