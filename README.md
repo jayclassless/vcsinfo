@@ -77,6 +77,7 @@ VCSInfo finds. These codes are:
 | %u | Untracked files indicator | All |
 | %a | Staged files indicator | git |
 | %m | Modified files indicator | All |
+| %t | Stashed changes indicator | bzr, git, hg |
 | %P | Repository root directory | All |
 | %p | Relative path to Repository root directory (relative to the analyzed path) | All |
 | %e | Base name of the repository root directory | All |

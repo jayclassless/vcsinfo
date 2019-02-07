@@ -43,6 +43,9 @@ type VcsInfo struct {
 
 	// Indicates whether or not there are untracked files.
 	HasNew bool `json:"has_new" xml:"hasNew"`
+
+	// Indicates whether or not there are stashed changes.
+	HasStashed bool `json:"has_stashed" xml:"hasStashed"`
 }
 
 // FormatOptions contains the options that govern how format strings are
@@ -56,6 +59,9 @@ type FormatOptions struct {
 
 	// The string displayed for the untracked file indicator.
 	HasNew string
+
+	// The string displayed for the stashed changes indicator.
+	HasStashed string
 
 	// The string displayed for hash/rev/branch tokens when the information
 	// they represent could not be found.
@@ -166,6 +172,7 @@ func GetDefaultFormatOptions() FormatOptions {
 		HasStaged:   "*",
 		HasModified: "+",
 		HasNew:      "?",
+		HasStashed:  "@",
 		Unknown:     "",
 	}
 }
@@ -237,6 +244,11 @@ func InfoToString(info VcsInfo, format string, options FormatOptions) (string, e
 		case 'm':
 			if info.HasModified {
 				buf.WriteString(options.HasModified)
+			}
+
+		case 't':
+			if info.HasStashed {
+				buf.WriteString(options.HasStashed)
 			}
 
 		case 'P':

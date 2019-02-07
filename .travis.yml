@@ -27,6 +27,7 @@ install:
   - fossil version
   - bzr --version
   - bzr whoami "Fake Tester <fake@example.com>"
+  - echo -e "[extensions]\nshelve=" > ~/.hgrc
 
 script:
   - make test

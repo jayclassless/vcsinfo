@@ -16,7 +16,7 @@ func (probe BzrProbe) Name() string {
 // DefaultFormat returns the default format string to use for Bazaar
 // repositories.
 func (probe BzrProbe) DefaultFormat() string {
-	return "%n[%b%m%u]"
+	return "%n[%b%m%u%t]"
 }
 
 // IsAvailable indicates whether or not this probe has the tools/environment
@@ -79,6 +79,15 @@ func (probe BzrProbe) extractCommitInfo(path string, info *VcsInfo) error {
 	return nil
 }
 
+func (probe BzrProbe) extractShelved(path string, info *VcsInfo) error {
+	_, err := runCommand(path, "bzr", "shelve", "--list")
+	if err != nil {
+		exitCode := getExitCode(err)
+		info.HasStashed = exitCode > 0
+	}
+	return nil
+}
+
 // GatherInfo extracts and returns VCS information for the Bazaar repository at
 // the specified path.
 func (probe BzrProbe) GatherInfo(path string) (VcsInfo, []error) {
@@ -100,6 +109,10 @@ func (probe BzrProbe) GatherInfo(path string) (VcsInfo, []error) {
 
 		func() error {
 			return probe.extractCommitInfo(path, &info)
+		},
+
+		func() error {
+			return probe.extractShelved(path, &info)
 		},
 	)
 

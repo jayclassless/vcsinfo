@@ -38,6 +38,10 @@ var (
 		"format-staged",
 		"The string to use for the staged files indicator.",
 	).Default("*").OverrideDefaultFromEnvar("VCSINFO_STAGED").String()
+	formatStashed = app.Flag(
+		"format-stashed",
+		"The string to use for the stashed changes indicator.",
+	).Default("@").OverrideDefaultFromEnvar("VCSINFO_STASHED").String()
 	formatUnknown = app.Flag(
 		"format-unknown",
 		"The string to use for format codes where no value could be determined.",
@@ -67,6 +71,7 @@ var (
     %%u  Untracked files indicator
     %%a  Staged files indicator
     %%m  Modified files indicator
+    %%t  Stashed changes indicator
     %%P  Repository root directory
     %%p  Relative path to Repository root directory (relative to the analyzed path)
     %%e  Base name of the repository root directory
@@ -91,6 +96,9 @@ var (
 
     VCSINFO_STAGED
       The string to use for the staged files indicator.
+
+    VCSINFO_STASHED
+      The string to used for the stashed changes indicator.
 
     VCSINFO_UNKNOWN
       The string to use for the %%h/%%s/%%r/%%s/%%v/%%b tokens if they could
@@ -150,6 +158,7 @@ func produceOutput(info vcsinfo.VcsInfo, probe vcsinfo.VcsProbe) (string, error)
 	options.HasNew = *formatUntracked
 	options.HasModified = *formatModified
 	options.HasStaged = *formatStaged
+	options.HasStashed = *formatStashed
 	options.Unknown = *formatUnknown
 
 	return vcsinfo.InfoToString(info, f, options)

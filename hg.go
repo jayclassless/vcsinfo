@@ -16,7 +16,7 @@ func (probe HgProbe) Name() string {
 // DefaultFormat returns the default format string to use for Mercurial
 // repositories.
 func (probe HgProbe) DefaultFormat() string {
-	return "%n[%b%m%u]"
+	return "%n[%b%m%u%t]"
 }
 
 // IsAvailable indicates whether or not this probe has the tools/environment
@@ -76,6 +76,21 @@ func (probe HgProbe) extractCommitInfo(path string, info *VcsInfo) error {
 	return nil
 }
 
+func (probe HgProbe) extractShelved(path string, info *VcsInfo) error {
+	out, err := runCommand(path, "hg", "shelve", "--list")
+	if err != nil {
+		exitCode := getExitCode(err)
+		if exitCode == 255 {
+			// This generally means the shelve extension isn't enabled.
+			return nil
+		}
+		return err
+	}
+
+	info.HasStashed = len(out) > 0
+	return nil
+}
+
 // GatherInfo extracts and returns VCS information for the Mercurial repository
 // at the specified path.
 func (probe HgProbe) GatherInfo(path string) (VcsInfo, []error) {
@@ -97,6 +112,10 @@ func (probe HgProbe) GatherInfo(path string) (VcsInfo, []error) {
 
 		func() error {
 			return probe.extractCommitInfo(path, &info)
+		},
+
+		func() error {
+			return probe.extractShelved(path, &info)
 		},
 	)
 

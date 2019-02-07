@@ -97,6 +97,7 @@ var _ = Describe("Git", func() {
 				"HasNew":      BeFalse(),
 				"HasModified": BeFalse(),
 				"HasStaged":   BeFalse(),
+				"HasStashed":  BeFalse(),
 				"Hash":        Equal(""),
 				"ShortHash":   Equal(""),
 				"Revision":    Equal(""),
@@ -113,6 +114,7 @@ var _ = Describe("Git", func() {
 				"HasNew":      BeTrue(),
 				"HasModified": BeFalse(),
 				"HasStaged":   BeFalse(),
+				"HasStashed":  BeFalse(),
 			}))
 		})
 
@@ -126,6 +128,7 @@ var _ = Describe("Git", func() {
 				"HasNew":      BeFalse(),
 				"HasModified": BeFalse(),
 				"HasStaged":   BeTrue(),
+				"HasStashed":  BeFalse(),
 			}))
 		})
 
@@ -141,6 +144,7 @@ var _ = Describe("Git", func() {
 				"HasNew":      BeFalse(),
 				"HasModified": BeTrue(),
 				"HasStaged":   BeFalse(),
+				"HasStashed":  BeFalse(),
 				"Hash":        Not(Equal("")),
 				"ShortHash":   Not(Equal("")),
 			}))
@@ -158,8 +162,27 @@ var _ = Describe("Git", func() {
 				"HasNew":      BeFalse(),
 				"HasModified": BeTrue(),
 				"HasStaged":   BeFalse(),
+				"HasStashed":  BeFalse(),
 				"Hash":        Not(Equal("")),
 				"ShortHash":   Not(Equal("")),
+			}))
+		})
+
+		It("sees stashed changes", func() {
+			writeFile(dir, "foo", "bar")
+			run(dir, "git", "add", "foo")
+			run(dir, "git", "commit", "-m", "blah")
+			writeFile(dir, "bar", "baz")
+			run(dir, "git", "add", "bar")
+			run(dir, "git", "stash")
+			info, err := probe.GatherInfo(dir)
+			Expect(err).To(BeEmpty())
+
+			Expect(info).To(MatchFields(IgnoreExtras, Fields{
+				"HasNew":      BeFalse(),
+				"HasModified": BeFalse(),
+				"HasStaged":   BeFalse(),
+				"HasStashed":  BeTrue(),
 			}))
 		})
 

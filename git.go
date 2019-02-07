@@ -14,7 +14,7 @@ func (probe GitProbe) Name() string {
 
 // DefaultFormat returns the default format string to use for Git repositories.
 func (probe GitProbe) DefaultFormat() string {
-	return "%n[%b%a%m%u]"
+	return "%n[%b%a%m%u%t]"
 }
 
 // IsAvailable indicates whether or not this probe has the tools/environment
@@ -93,6 +93,16 @@ func (probe GitProbe) extractHash(path string, info *VcsInfo) error {
 	return nil
 }
 
+func (probe GitProbe) extractStashed(path string, info *VcsInfo) error {
+	out, err := runCommand(path, "git", "stash", "list")
+	if err != nil {
+		return err
+	}
+
+	info.HasStashed = len(out) > 0
+	return nil
+}
+
 // GatherInfo extracts and returns VCS information for the Git repository at
 // the specified path.
 func (probe GitProbe) GatherInfo(path string) (VcsInfo, []error) {
@@ -122,6 +132,10 @@ func (probe GitProbe) GatherInfo(path string) (VcsInfo, []error) {
 
 		func() error {
 			return probe.extractShortHash(path, &info)
+		},
+
+		func() error {
+			return probe.extractStashed(path, &info)
 		},
 	)
 

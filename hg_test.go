@@ -97,6 +97,7 @@ var _ = Describe("Mercurial", func() {
 				"HasNew":      BeFalse(),
 				"HasModified": BeFalse(),
 				"HasStaged":   BeFalse(),
+				"HasStashed":  BeFalse(),
 				"Hash":        Equal(""),
 				"ShortHash":   Equal(""),
 				"Revision":    Equal(""),
@@ -113,6 +114,7 @@ var _ = Describe("Mercurial", func() {
 				"HasNew":      BeTrue(),
 				"HasModified": BeFalse(),
 				"HasStaged":   BeFalse(),
+				"HasStashed":  BeFalse(),
 			}))
 		})
 
@@ -128,6 +130,7 @@ var _ = Describe("Mercurial", func() {
 				"HasNew":      BeFalse(),
 				"HasModified": BeTrue(),
 				"HasStaged":   BeFalse(),
+				"HasStashed":  BeFalse(),
 				"Hash":        Not(Equal("")),
 				"ShortHash":   Not(Equal("")),
 			}))
@@ -145,8 +148,24 @@ var _ = Describe("Mercurial", func() {
 				"HasNew":      BeFalse(),
 				"HasModified": BeTrue(),
 				"HasStaged":   BeFalse(),
+				"HasStashed":  BeFalse(),
 				"Hash":        Not(Equal("")),
 				"ShortHash":   Not(Equal("")),
+			}))
+		})
+
+		It("sees stashed changes", func() {
+			writeFile(dir, "foo", "bar")
+			run(dir, "hg", "add", "foo")
+			run(dir, "hg", "shelve")
+			info, err := probe.GatherInfo(dir)
+			Expect(err).To(BeEmpty())
+
+			Expect(info).To(MatchFields(IgnoreExtras, Fields{
+				"HasNew":      BeFalse(),
+				"HasModified": BeFalse(),
+				"HasStaged":   BeFalse(),
+				"HasStashed":  BeTrue(),
 			}))
 		})
 

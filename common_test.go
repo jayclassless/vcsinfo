@@ -89,7 +89,7 @@ var _ = Describe("Public API", func() {
 			}
 			actual, err := InfoToJSON(info)
 			Expect(err).To(BeNil())
-			Expect(actual).To(Equal(`{"vcs_name":"fake","path":"/foo/bar","repository_root":"/foo","short_hash":"","hash":"abc123","revision":"","branch":"","has_staged":false,"has_modified":true,"has_new":false}`))
+			Expect(actual).To(Equal(`{"vcs_name":"fake","path":"/foo/bar","repository_root":"/foo","short_hash":"","hash":"abc123","revision":"","branch":"","has_staged":false,"has_modified":true,"has_new":false,"has_stashed":false}`))
 		})
 	})
 
@@ -104,7 +104,7 @@ var _ = Describe("Public API", func() {
 			}
 			actual, err := InfoToXML(info)
 			Expect(err).To(BeNil())
-			Expect(actual).To(Equal("<VcsInfo><vcsName>fake</vcsName><path>/foo/bar</path><repositoryRoot>/foo</repositoryRoot><shortHash></shortHash><hash>abc123</hash><revision></revision><branch></branch><hasStaged>false</hasStaged><hasModified>true</hasModified><hasNew>false</hasNew></VcsInfo>"))
+			Expect(actual).To(Equal("<VcsInfo><vcsName>fake</vcsName><path>/foo/bar</path><repositoryRoot>/foo</repositoryRoot><shortHash></shortHash><hash>abc123</hash><revision></revision><branch></branch><hasStaged>false</hasStaged><hasModified>true</hasModified><hasNew>false</hasNew><hasStashed>false</hasStashed></VcsInfo>"))
 		})
 	})
 

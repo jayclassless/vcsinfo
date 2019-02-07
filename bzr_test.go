@@ -101,6 +101,7 @@ var _ = Describe("Bazaar", func() {
 				"HasNew":      BeFalse(),
 				"HasModified": BeFalse(),
 				"HasStaged":   BeFalse(),
+				"HasStashed":  BeFalse(),
 				"Hash":        Equal(""),
 				"Revision":    Equal(""),
 				"Branch":      Equal("trunk"),
@@ -116,6 +117,7 @@ var _ = Describe("Bazaar", func() {
 				"HasNew":      BeTrue(),
 				"HasModified": BeFalse(),
 				"HasStaged":   BeFalse(),
+				"HasStashed":  BeFalse(),
 			}))
 		})
 
@@ -131,6 +133,7 @@ var _ = Describe("Bazaar", func() {
 				"HasNew":      BeFalse(),
 				"HasModified": BeTrue(),
 				"HasStaged":   BeFalse(),
+				"HasStashed":  BeFalse(),
 				"Hash":        Not(Equal("")),
 			}))
 		})
@@ -147,7 +150,23 @@ var _ = Describe("Bazaar", func() {
 				"HasNew":      BeFalse(),
 				"HasModified": BeTrue(),
 				"HasStaged":   BeFalse(),
+				"HasStashed":  BeFalse(),
 				"Hash":        Not(Equal("")),
+			}))
+		})
+
+		It("sees stashed changes", func() {
+			writeFile(dir, "foo", "bar")
+			run(dir, "bzr", "add", "foo")
+			run(dir, "bzr", "shelve", "--all")
+			info, err := probe.GatherInfo(dir)
+			Expect(err).To(BeEmpty())
+
+			Expect(info).To(MatchFields(IgnoreExtras, Fields{
+				"HasNew":      BeFalse(),
+				"HasModified": BeFalse(),
+				"HasStaged":   BeFalse(),
+				"HasStashed":  BeTrue(),
 			}))
 		})
 

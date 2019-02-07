@@ -8,6 +8,7 @@ can, this project will adhere to [Semantic Versioning](https://semver.org).
 
 ### Added
 
+* Added the ability to indicate the presence of staged/shelved changes.
 * Will now bail on retreiving VCS information if a file named ``.novcsinfo`` is
   found in the directory or a parent directory while searching for the
   repository root.
