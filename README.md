@@ -40,7 +40,7 @@ path somewhere. There are several ways to get your hands on it:
 * Download from our [GitHub
   Releases](https://github.com/jayclassless/vcsinfo/releases). Every release
   will be available here with pre-built binaries for all the platforms we
-  support. We'll also provide RPMs, DEBs, and SNAPs.
+  support. We'll also provide RPMs and DEBs.
 
 * Homebrew. We provide a custom
   [tap](https://github.com/jayclassless/homebrew-vcsinfo) that allows Homebrew
@@ -56,5 +56,34 @@ path somewhere. There are several ways to get your hands on it:
 
 ## Usage
 
-TBD
+Just executing ``vcsinfo`` will examine the current directory and output a
+short string that summarizes the state of the current repository, if the
+current directory is in one. If you'd like to examine a different directory
+than your current, use the ``--path`` option.
+
+If you'd like to have VCSInfo output a string formatted differently than the
+default, you can use the ``--format`` option to specify a format string. In
+this string, you can use a number of ``%`` codes to embed the information
+VCSInfo finds. These codes are:
+
+| Code | Description | VCS Returned For
+| --- | --- | --- |
+| %n | VCS name | All |
+| %h | Hash | bzr, darcs, fossil, git, hg |
+| %s | Short Hash | git, hg |
+| %r | Revision ID | bzr, hg, svn |
+| %v | Short Hash, Revision ID, or Hash (whichever one that is found first is used) | All |
+| %b | Branch | bzr, darcs, fossil, git, hg, svn |
+| %u | Untracked files indicator | All |
+| %a | Staged files indicator | git |
+| %m | Modified files indicator | All |
+| %P | Repository root directory | All |
+| %p | Relative path to Repository root directory (relative to the analyzed path) | All |
+| %e | Base name of the repository root directory | All |
+| %% | Literal "%" | All |
+
+You can also use the ``--json`` or ``--xml`` options to output JSON- or
+XML-encoded structures that contain all the information VCSInfo found.
+
+For details on all available options, run ``vcsinfo --help``.
 

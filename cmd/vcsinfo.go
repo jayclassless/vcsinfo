@@ -20,23 +20,23 @@ var (
 
 	targetPath = app.Flag(
 		"path",
-		"the path to retrieve VCS information for",
+		"The path to retrieve VCS information for.",
 	).Short('p').String()
 	format = app.Flag(
 		"format",
-		"the output format of the VCS information",
+		"The output format of the VCS information.",
 	).Short('f').String()
 	json = app.Flag(
 		"json",
-		"renders the output in a JSON object (overrides --format)",
+		"Renders the output in a JSON object (overrides --format).",
 	).Bool()
 	xml = app.Flag(
 		"xml",
-		"renders the output in an XML document (overrides --format)",
+		"Renders the output in an XML document (overrides --format).",
 	).Bool()
 	noisy = app.Flag(
 		"noisy",
-		"if hard failures are encountered, complain loudly instead of silently outputting nothing",
+		"If hard failures are encountered, complain loudly instead of silently outputting nothing.",
 	).Bool()
 
 	helpText = `Retrieves and outputs basic information about the status of a VCS repository.
