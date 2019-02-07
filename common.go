@@ -119,6 +119,13 @@ func FindProbeForPath(path string, probes []VcsProbe) (VcsProbe, error) {
 	var goodProbe VcsProbe
 
 	isAcceptable := func(path string) (bool, error) {
+		skipExists, err := fileExists(filepath.Join(path, ".novcsinfo"))
+		if err != nil {
+			return false, err
+		} else if skipExists {
+			return false, fmt.Errorf("novcsinfo")
+		}
+
 		for _, probe := range probes {
 			exists, err := probe.IsRepositoryRoot(path)
 			if err != nil {
@@ -133,6 +140,10 @@ func FindProbeForPath(path string, probes []VcsProbe) (VcsProbe, error) {
 	}
 
 	_, err := findAcceptablePath(path, isAcceptable)
+	if err != nil && err.Error() == "novcsinfo" {
+		return nil, nil
+	}
+
 	return goodProbe, err
 }
 

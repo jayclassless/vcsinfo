@@ -61,6 +61,21 @@ var _ = Describe("Public API", func() {
 			probe, _ = FindProbeForPath(dir+"/deeper/dir", allProbes)
 			Expect(probe.Name()).To(Equal("hg"))
 		})
+
+		It("honors .novcsinfo", func() {
+			run(dir, "git", "init")
+			mkdir(dir, "/deeper/dir")
+			writeFile(dir, "/deeper/.novcsinfo", "")
+
+			probe, _ := FindProbeForPath(dir+"/deeper/dir", allProbes)
+			Expect(probe).To(BeNil())
+
+			probe, _ = FindProbeForPath(dir+"/deeper", allProbes)
+			Expect(probe).To(BeNil())
+
+			probe, _ = FindProbeForPath(dir, allProbes)
+			Expect(probe.Name()).To(Equal("git"))
+		})
 	})
 
 	Describe("InfoToJSON", func() {
