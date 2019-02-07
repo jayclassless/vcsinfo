@@ -25,7 +25,23 @@ var (
 	format = app.Flag(
 		"format",
 		"The output format of the VCS information.",
-	).Short('f').String()
+	).Short('f').OverrideDefaultFromEnvar("VCSINFO_FORMAT").String()
+	formatUntracked = app.Flag(
+		"format-untracked",
+		"The string to use for the untracked files indicator.",
+	).Default("?").OverrideDefaultFromEnvar("VCSINFO_UNTRACKED").String()
+	formatModified = app.Flag(
+		"format-modified",
+		"The string to use for the modified files indicator.",
+	).Default("+").OverrideDefaultFromEnvar("VCSINFO_MODIFIED").String()
+	formatStaged = app.Flag(
+		"format-staged",
+		"The string to use for the staged files indicator.",
+	).Default("*").OverrideDefaultFromEnvar("VCSINFO_STAGED").String()
+	formatUnknown = app.Flag(
+		"format-unknown",
+		"The string to use for format codes where no value could be determined.",
+	).Default("").OverrideDefaultFromEnvar("VCSINFO_UNKNOWN").String()
 	json = app.Flag(
 		"json",
 		"Renders the output in a JSON object (overrides --format).",
@@ -41,7 +57,7 @@ var (
 
 	helpText = `Retrieves and outputs basic information about the status of a VCS repository.
 
-  Format String Tokens:
+  Format String Codes:
     %%n  VCS name
     %%h  Hash
     %%s  Short Hash
@@ -67,14 +83,14 @@ var (
       The format string to use to generate output (if not explicitly specified
       via the command line).
 
-    VCSINFO_NEW
-      The string to use for the untracked files indicator. Defaults to "?".
+    VCSINFO_UNTRACKED
+      The string to use for the untracked files indicator.
 
     VCSINFO_MODIFIED
-      The string to use for the modified files indicator. Defaults to "+".
+      The string to use for the modified files indicator.
 
     VCSINFO_STAGED
-      The string to use for the staged files indicator. Defaults to "*".
+      The string to use for the staged files indicator.
 
     VCSINFO_UNKNOWN
       The string to use for the %%h/%%s/%%r/%%s/%%v/%%b tokens if they could
@@ -127,29 +143,14 @@ func produceOutput(info vcsinfo.VcsInfo, probe vcsinfo.VcsProbe) (string, error)
 
 	f := *format
 	if f == "" {
-		f = os.Getenv("VCSINFO_FORMAT")
-		if f == "" {
-			f = probe.DefaultFormat()
-		}
+		f = probe.DefaultFormat()
 	}
 
 	options := vcsinfo.GetDefaultFormatOptions()
-	tmp := os.Getenv("VCSINFO_NEW")
-	if tmp != "" {
-		options.HasNew = tmp
-	}
-	tmp = os.Getenv("VCSINFO_MODIFIED")
-	if tmp != "" {
-		options.HasModified = tmp
-	}
-	tmp = os.Getenv("VCSINFO_STAGED")
-	if tmp != "" {
-		options.HasStaged = tmp
-	}
-	tmp = os.Getenv("VCSINFO_UNKNOWN")
-	if tmp != "" {
-		options.Unknown = tmp
-	}
+	options.HasNew = *formatUntracked
+	options.HasModified = *formatModified
+	options.HasStaged = *formatStaged
+	options.Unknown = *formatUnknown
 
 	return vcsinfo.InfoToString(info, f, options)
 }
