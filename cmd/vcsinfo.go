@@ -166,15 +166,15 @@ func failIfError(err error, message string) {
 }
 
 func makeDefaultFormatHelp(probes []vcsinfo.VcsProbe) string {
-	m := make(map[string]string)
+	m := make(map[string][]string)
 
 	for _, probe := range probes {
 		f := probe.DefaultFormat()
 		_, exists := m[f]
 		if exists {
-			m[f] = fmt.Sprintf("%s, %s", m[f], probe.Name())
+			m[f] = append(m[f], probe.Name())
 		} else {
-			m[f] = probe.Name()
+			m[f] = []string{probe.Name()}
 		}
 	}
 
@@ -186,7 +186,9 @@ func makeDefaultFormatHelp(probes []vcsinfo.VcsProbe) string {
 
 	var out string
 	for _, key := range keys {
-		out = fmt.Sprintf("%s    %s:\n      %s\n\n", out, m[key], key)
+		probes := m[key]
+		sort.Strings(probes)
+		out = fmt.Sprintf("%s    %s:\n      %s\n\n", out, strings.Join(probes, ", "), key)
 	}
 
 	return strings.TrimRight(out, "\n")
