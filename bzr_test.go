@@ -17,6 +17,12 @@ var _ = Describe("Bazaar", func() {
 		})
 	})
 
+	Describe("DefaultFormat", func() {
+		It("works", func() {
+			Expect(probe.DefaultFormat()).To(Not(Equal("")))
+		})
+	})
+
 	Describe("IsAvailable", func() {
 		It("works", func() {
 			Expect(probe.IsAvailable()).To(BeTrue())
