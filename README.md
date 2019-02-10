@@ -86,5 +86,7 @@ VCSInfo finds. These codes are:
 You can also use the ``--json`` or ``--xml`` options to output JSON- or
 XML-encoded structures that contain all the information VCSInfo found.
 
-For details on all available options, run ``vcsinfo --help``.
+For details on all available options, run ``vcsinfo --help``. You can also use
+``--help-format`` for information about output formatting, and ``--help-envar``
+for information about environment variables that influence VCSInfo.
 
