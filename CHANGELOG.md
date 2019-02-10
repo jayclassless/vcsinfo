@@ -14,6 +14,7 @@ can, this project will adhere to [Semantic Versioning](https://semver.org).
   repository root.
 * Added command-line options that can be used to cover the same functionality
   as all the environment variables that are used.
+* Added options to specify per-VCS format strings.
 
 ### Fixed
 

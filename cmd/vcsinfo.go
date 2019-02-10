@@ -59,6 +59,8 @@ var (
 		"If hard failures are encountered, complain loudly instead of silently outputting nothing.",
 	).Bool()
 
+	probeFormats = make(map[string]*string)
+
 	helpText = `Retrieves and outputs basic information about the status of a VCS repository.
 
   Format String Codes:
@@ -149,9 +151,12 @@ func produceOutput(info vcsinfo.VcsInfo, probe vcsinfo.VcsProbe) (string, error)
 		return vcsinfo.InfoToXML(info)
 	}
 
-	f := *format
+	f := *probeFormats[probe.Name()]
 	if f == "" {
-		f = probe.DefaultFormat()
+		f = *format
+		if f == "" {
+			f = probe.DefaultFormat()
+		}
 	}
 
 	options := vcsinfo.GetDefaultFormatOptions()
@@ -206,6 +211,15 @@ func makeDefaultFormatHelp(probes []vcsinfo.VcsProbe) string {
 func main() {
 	allProbes, err := vcsinfo.GetAvailableProbes()
 	failIfError(err, "Could not determine available VCS probes")
+
+	for _, probe := range allProbes {
+		probeFormats[probe.Name()] = app.Flag(
+			fmt.Sprintf("format-%s", probe.Name()),
+			fmt.Sprintf("The output format of the VCS information for %s repositories.", probe.Name()),
+		).OverrideDefaultFromEnvar(
+			fmt.Sprintf("VCSINFO_FORMAT_%s", strings.ToUpper(probe.Name())),
+		).PlaceHolder("FORMAT").String()
+	}
 
 	app.Version(version)
 	app.Help = fmt.Sprintf(helpText, makeDefaultFormatHelp(allProbes))
