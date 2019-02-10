@@ -178,5 +178,11 @@ var _ = Describe("Subversion", func() {
 				"Branch":   Equal("mybranch"),
 			}))
 		})
+
+		It("doesnt crash when in VCS special dir", func() {
+			run(dir, "svn", "checkout", repoUrl+"/trunk", ".")
+			_, err := probe.GatherInfo(dir + "/.svn")
+			Expect(err).To(BeEmpty())
+		})
 	})
 })

@@ -153,5 +153,10 @@ var _ = Describe("Darcs", func() {
 				"Hash":        Not(Equal("")),
 			}))
 		})
+
+		It("doesnt crash when in VCS special dir", func() {
+			_, err := probe.GatherInfo(dir + "/_darcs")
+			Expect(err).To(BeEmpty())
+		})
 	})
 })

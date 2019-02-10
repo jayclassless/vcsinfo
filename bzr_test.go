@@ -178,5 +178,10 @@ var _ = Describe("Bazaar", func() {
 				"Branch": Equal("mycoolbranch"),
 			}))
 		})
+
+		It("doesnt crash when in VCS special dir", func() {
+			_, err := probe.GatherInfo(dir + "/.bzr")
+			Expect(err).To(BeEmpty())
+		})
 	})
 })

@@ -181,5 +181,11 @@ var _ = Describe("CVS", func() {
 				"HasStaged":   BeFalse(),
 			}))
 		})
+
+		It("doesnt crash when in VCS special dir", func() {
+			cvs(dir, "checkout", "dummy", ".")
+			_, err := probe.GatherInfo(dir + "/CVS")
+			Expect(err).To(BeEmpty())
+		})
 	})
 })

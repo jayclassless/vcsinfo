@@ -3,6 +3,7 @@ package vcsinfo
 import (
 	"bufio"
 	"bytes"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -62,6 +63,20 @@ func runCommand(workingDir string, command ...string) ([]string, error) {
 	scanner := bufio.NewScanner(bytes.NewReader(out))
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
+	}
+
+	if false {
+		// Leaving this in for the moment for easier debugging
+		if len(lines) == 0 {
+			fmt.Printf("[runCommand: %s]: <NO OUTPUT>\n", command)
+		} else {
+			for _, line := range lines {
+				fmt.Printf("[runCommand: %s]: %s\n", command, line)
+			}
+		}
+		if err != nil {
+			fmt.Printf("[runCommand: %s]! %s\n", command, err)
+		}
 	}
 
 	return lines, err

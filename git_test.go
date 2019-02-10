@@ -195,5 +195,10 @@ var _ = Describe("Git", func() {
 				"Branch": Equal("foo"),
 			}))
 		})
+
+		It("doesnt crash when in VCS special dir", func() {
+			_, err := probe.GatherInfo(dir + "/.git")
+			Expect(err).To(BeEmpty())
+		})
 	})
 })

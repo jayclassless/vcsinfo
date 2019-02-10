@@ -178,5 +178,10 @@ var _ = Describe("Mercurial", func() {
 				"Branch": Equal("foo"),
 			}))
 		})
+
+		It("doesnt crash when in VCS special dir", func() {
+			_, err := probe.GatherInfo(dir + "/.hg")
+			Expect(err).To(BeEmpty())
+		})
 	})
 })

@@ -15,6 +15,11 @@ can, this project will adhere to [Semantic Versioning](https://semver.org).
 * Added command-line options that can be used to cover the same functionality
   as all the environment variables that are used.
 
+### Fixed
+
+* Fixed an issue where a crash would occur if executed somewhere within a
+  repository's ``.git`` directory.
+
 
 ## [0.1.0] - 2019-02-05
 

@@ -2,6 +2,7 @@ package vcsinfo
 
 import (
 	"path/filepath"
+	"strings"
 )
 
 // GitProbe is a probe for extracting information out of a Git repository.
@@ -32,6 +33,10 @@ func (probe GitProbe) IsRepositoryRoot(path string) (bool, error) {
 func (probe GitProbe) extractStatus(path string, info *VcsInfo) error {
 	out, err := runCommand(path, "git", "status", "--porcelain")
 	if err != nil {
+		exitCode := getExitCode(err)
+		if exitCode == 128 && strings.Contains(out[0], "must be run in a work tree") {
+			return nil
+		}
 		return err
 	}
 
@@ -96,6 +101,11 @@ func (probe GitProbe) extractHash(path string, info *VcsInfo) error {
 func (probe GitProbe) extractStashed(path string, info *VcsInfo) error {
 	out, err := runCommand(path, "git", "stash", "list")
 	if err != nil {
+		exitCode := getExitCode(err)
+		if exitCode == 1 && strings.Contains(out[0], "without a working tree") {
+			// This generally means the repo doesn't have a commit yet.
+			return nil
+		}
 		return err
 	}
 
