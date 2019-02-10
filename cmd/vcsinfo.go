@@ -16,8 +16,19 @@ import (
 var (
 	version = "dev"
 
-	app = kingpin.New("vcsinfo", "")
+	app = kingpin.New(
+		"vcsinfo",
+		"Retrieves and outputs basic information about the status of a VCS repository.",
+	)
 
+	helpFormat = app.Flag(
+		"help-format",
+		"Show help about defining output format strings",
+	).Bool()
+	helpEnvar = app.Flag(
+		"help-envar",
+		"Show help about environment variables that influence the execution of VCSInfo",
+	).Bool()
 	targetPath = app.Flag(
 		"path",
 		"The path to retrieve VCS information for.",
@@ -49,11 +60,11 @@ var (
 	json = app.Flag(
 		"json",
 		"Renders the output in a JSON object (overrides --format).",
-	).Bool()
+	).Short('j').Bool()
 	xml = app.Flag(
 		"xml",
 		"Renders the output in an XML document (overrides --format).",
-	).Bool()
+	).Short('x').Bool()
 	noisy = app.Flag(
 		"noisy",
 		"If hard failures are encountered, complain loudly instead of silently outputting nothing.",
@@ -61,50 +72,56 @@ var (
 
 	probeFormats = make(map[string]*string)
 
-	helpText = `Retrieves and outputs basic information about the status of a VCS repository.
+	helpFormatText = `
+The following codes can be used in format strings to embed VCS information
+detected by VCSInfo in its output:
 
-  Format String Codes:
-    %%n  VCS name
-    %%h  Hash
-    %%s  Short Hash
-    %%r  Revision ID
-    %%v  Short Hash, Revision ID, or Hash (whichever one that is found first is used)
-    %%b  Branch
-    %%u  Untracked files indicator
-    %%a  Staged files indicator
-    %%m  Modified files indicator
-    %%t  Stashed changes indicator
-    %%P  Repository root directory
-    %%p  Relative path to Repository root directory (relative to the analyzed path)
-    %%e  Base name of the repository root directory
-    %%%%  Literal "%%"
+  %%n  VCS name
+  %%h  Hash
+  %%s  Short Hash
+  %%r  Revision ID
+  %%v  Short Hash, Revision ID, or Hash (whichever one that is found first is used)
+  %%b  Branch
+  %%u  Untracked files indicator
+  %%a  Staged files indicator
+  %%m  Modified files indicator
+  %%t  Stashed changes indicator
+  %%P  Repository root directory
+  %%p  Relative path to Repository root directory (relative to the analyzed path)
+  %%e  Base name of the repository root directory
+  %%%%  Literal "%%"
 
-  If no format string is specified on the command line or via environment
-  variables, then the following strings will be used, depending on which VCS is
-  detected:
+If no format string is specified on the command line or via environment
+variables, then the following strings will be used, depending on which VCS is
+detected:
 
 %s
+`
+	helpEnvarText = `
+The following environment variables influence the execution and/or output of
+VCSInfo:
 
-  Environment Variables:
-    VCSINFO_FORMAT
-      The format string to use to generate output (if not explicitly specified
-      via the command line).
+  VCSINFO_FORMAT
+    The format string to use to generate output (if not explicitly specified
+    via the command line).
 
-    VCSINFO_UNTRACKED
-      The string to use for the untracked files indicator.
+  VCSINFO_UNTRACKED
+    The string to use for the untracked files indicator.
 
-    VCSINFO_MODIFIED
-      The string to use for the modified files indicator.
+  VCSINFO_MODIFIED
+    The string to use for the modified files indicator.
 
-    VCSINFO_STAGED
-      The string to use for the staged files indicator.
+  VCSINFO_STAGED
+    The string to use for the staged files indicator.
 
-    VCSINFO_STASHED
-      The string to used for the stashed changes indicator.
+  VCSINFO_STASHED
+    The string to used for the stashed changes indicator.
 
-    VCSINFO_UNKNOWN
-      The string to use for the %%h/%%s/%%r/%%s/%%v/%%b tokens if they could
-      not be determined. Defaults to "".
+  VCSINFO_UNKNOWN
+    The string to use for the %%h/%%s/%%r/%%s/%%v/%%b tokens if they could
+    not be determined. Defaults to "".
+
+%s
 `
 )
 
@@ -202,10 +219,20 @@ func makeDefaultFormatHelp(probes []vcsinfo.VcsProbe) string {
 	for _, key := range keys {
 		probes := m[key]
 		sort.Strings(probes)
-		out = fmt.Sprintf("%s    %s:\n      %s\n\n", out, strings.Join(probes, ", "), key)
+		out = fmt.Sprintf("%s  %s:\n    %s\n\n", out, strings.Join(probes, ", "), key)
 	}
 
-	return strings.TrimRight(out, "\n")
+	return out
+}
+
+func makeEnvarHelp(probes []vcsinfo.VcsProbe) string {
+	var out string
+
+	for _, probe := range probes {
+		out = fmt.Sprintf("%s  VCSINFO_FORMAT_%s\n    The format string to use to generate output for %s repositories.\n\n", out, strings.ToUpper(probe.Name()), probe.Name())
+	}
+
+	return out
 }
 
 func main() {
@@ -222,9 +249,21 @@ func main() {
 	}
 
 	app.Version(version)
-	app.Help = fmt.Sprintf(helpText, makeDefaultFormatHelp(allProbes))
 	app.HelpFlag.Short('h')
 	kingpin.MustParse(app.Parse(os.Args[1:]))
+
+	if *helpFormat {
+		fmt.Println(strings.TrimSpace(
+			fmt.Sprintf(helpFormatText, makeDefaultFormatHelp(allProbes)),
+		))
+		os.Exit(0)
+	}
+	if *helpEnvar {
+		fmt.Println(strings.TrimSpace(
+			fmt.Sprintf(helpEnvarText, makeEnvarHelp(allProbes)),
+		))
+		os.Exit(0)
+	}
 
 	path, err := determinePath()
 	failIfError(err, "Could not find path to analyze")
