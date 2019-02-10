@@ -220,7 +220,7 @@ func main() {
 
 	if probe != nil {
 		info, errs := probe.GatherInfo(path)
-		if len(errs) > 0 {
+		if *noisy && len(errs) > 0 {
 			for _, err := range errs {
 				app.Errorf("%s", err)
 			}
