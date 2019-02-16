@@ -50,7 +50,7 @@ func (probe HgProbe) extractStatus(path string, info *VcsInfo) error {
 
 func (probe HgProbe) extractCommitInfo(path string, info *VcsInfo) error {
 	out, err := runCommand(path, "hg", "identify", "--branch", "--num", "--id", "--debug")
-	if err != nil {
+	if err != nil || len(out) == 0 {
 		return err
 	}
 
