@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file. As best we
 can, this project will adhere to [Semantic Versioning](https://semver.org).
 
 
+## [0.2.1] - 2019-02-22
+
+### Fixed
+
+* Fixed some occasional Mercurial errors.
+
+
 ## [0.2.0] - 2019-02-10
 
 ### Added
