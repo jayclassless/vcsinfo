@@ -55,7 +55,7 @@ func (probe HgProbe) extractCommitInfo(path string, info *VcsInfo) error {
 	}
 
 	var parts []string
-	for _, line := range(out) {
+	for _, line := range out {
 		parts = strings.Split(line, " ")
 		if len(parts) == 3 && parts[0] != "skip" {
 			break
