@@ -54,7 +54,16 @@ func (probe HgProbe) extractCommitInfo(path string, info *VcsInfo) error {
 		return err
 	}
 
-	parts := strings.Split(out[0], " ")
+	var parts []string
+	for _, line := range(out) {
+		parts = strings.Split(line, " ")
+		if len(parts) == 3 && parts[0] != "skip" {
+			break
+		}
+	}
+	if len(parts) != 3 {
+		return nil
+	}
 
 	info.Branch = parts[2]
 
