@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"os/user"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -137,10 +136,11 @@ func determinePath() (string, error) {
 		}
 	} else {
 		if strings.HasPrefix(path, "~") {
-			usr, err := user.Current()
-			if err == nil {
-				path = usr.HomeDir + path[1:]
+			home, err := os.UserHomeDir()
+			if err != nil {
+				return "", err
 			}
+			path = home + path[1:]
 		}
 	}
 

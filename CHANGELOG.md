@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file. As best we
 can, this project will adhere to [Semantic Versioning](https://semver.org).
 
 
+## [0.3.0] - 2019-03-02
+
+### Changed
+
+* Rebuilt with Go 1.12.
+
+
 ## [0.2.1] - 2019-02-22
 
 ### Fixed

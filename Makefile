@@ -14,15 +14,15 @@ coverage::
 	@go tool cover -html=coverage.out
 
 lint::
-	@${GOBIN}/golint ./...
-	@${GOBIN}/gocyclo -over 10 .
+	@${GOBIN}/golint -set_exit_status . cmd
+	@${GOBIN}/gocyclo -over 10 *.go cmd
 
 fmt::
-	@gofmt -s -w .
+	@gofmt -s -w *.go cmd
 
 test-publish::
 	@goreleaser release --snapshot --rm-dist
 
 clean::
-	@rm -rf dist coverage.out
+	@rm -rf dist coverage.out .vendor
 
