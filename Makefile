@@ -1,11 +1,11 @@
 GOBIN = ${shell go env GOPATH}/bin
 
-
 init::
-	@go get github.com/onsi/ginkgo/ginkgo
-	@go get golang.org/x/lint/golint
-	@go get github.com/fzipp/gocyclo
-	@go get github.com/mattn/goveralls
+	@go mod download
+	@go install github.com/onsi/ginkgo/ginkgo
+	@go install golang.org/x/lint/golint
+	@go install github.com/fzipp/gocyclo
+	@go install github.com/mattn/goveralls
 
 test::
 	@${GOBIN}/ginkgo -p -cover -coverprofile=coverage.out
@@ -24,5 +24,6 @@ test-publish::
 	@goreleaser release --snapshot --rm-dist
 
 clean::
+	@-chmod -R u+w .vendor
 	@rm -rf dist coverage.out .vendor
 
