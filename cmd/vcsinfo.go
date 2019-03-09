@@ -134,14 +134,12 @@ func determinePath() (string, error) {
 		if err != nil {
 			return "", err
 		}
-	} else {
-		if strings.HasPrefix(path, "~") {
-			home, err := os.UserHomeDir()
-			if err != nil {
-				return "", err
-			}
-			path = home + path[1:]
+	} else if strings.HasPrefix(path, "~") {
+		home, err := os.UserHomeDir()
+		if err != nil {
+			return "", err
 		}
+		path = home + path[1:]
 	}
 
 	path, err = filepath.Abs(filepath.Clean(path))
@@ -229,7 +227,12 @@ func makeEnvarHelp(probes []vcsinfo.VcsProbe) string {
 	var out string
 
 	for _, probe := range probes {
-		out = fmt.Sprintf("%s  VCSINFO_FORMAT_%s\n    The format string to use to generate output for %s repositories.\n\n", out, strings.ToUpper(probe.Name()), probe.Name())
+		out = fmt.Sprintf(
+			"%s  VCSINFO_FORMAT_%s\n    The format string to use to generate output for %s repositories.\n\n",
+			out,
+			strings.ToUpper(probe.Name()),
+			probe.Name(),
+		)
 	}
 
 	return out

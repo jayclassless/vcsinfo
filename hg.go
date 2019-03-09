@@ -32,7 +32,11 @@ func (probe HgProbe) IsRepositoryRoot(path string) (bool, error) {
 }
 
 func (probe HgProbe) extractStatus(path string, info *VcsInfo) error {
-	out, err := runCommand(path, "hg", "status", "--modified", "--added", "--removed", "--unknown", "--removed", "--deleted")
+	out, err := runCommand(
+		path,
+		"hg", "status",
+		"--modified", "--added", "--removed", "--unknown", "--removed", "--deleted",
+	)
 	if err != nil {
 		return err
 	}

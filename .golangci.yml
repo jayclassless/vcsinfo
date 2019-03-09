@@ -6,4 +6,12 @@ run:
 
 linters:
   enable-all: true
+  disable:
+    - goconst
+    - gochecknoglobals
+
+linters-settings:
+  gocritic:
+    disabled-checks:
+      - ifElseChain
 

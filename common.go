@@ -156,13 +156,13 @@ func FindProbeForPath(path string, probes []VcsProbe) (VcsProbe, error) {
 // InfoToJSON renders the VcsInfo as a JSON object.
 func InfoToJSON(info VcsInfo) (string, error) {
 	out, err := json.Marshal(info)
-	return string(out[:]), err
+	return string(out), err
 }
 
 // InfoToXML renders the VcsInfo as an XML document.
 func InfoToXML(info VcsInfo) (string, error) {
 	out, err := xml.Marshal(info)
-	return string(out[:]), err
+	return string(out), err
 }
 
 // GetDefaultFormatOptions returns a FormatOptions initialized with the default
@@ -267,7 +267,7 @@ func InfoToString(info VcsInfo, format string, options FormatOptions) (string, e
 			buf.WriteString("%")
 
 		default:
-			return "", fmt.Errorf("Unexpected formatting code \"%%%s\"", string(char))
+			return "", fmt.Errorf("unexpected formatting code \"%%%s\"", string(char))
 		}
 	}
 

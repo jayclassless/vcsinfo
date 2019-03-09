@@ -179,7 +179,7 @@ var _ = Describe("Public API", func() {
 			info := VcsInfo{}
 			actual, err := InfoToString(info, "%Q", GetDefaultFormatOptions())
 			Expect(actual).To(Equal(""))
-			Expect(err).To(MatchError(`Unexpected formatting code "%Q"`))
+			Expect(err).To(MatchError(`unexpected formatting code "%Q"`))
 		})
 	})
 })
