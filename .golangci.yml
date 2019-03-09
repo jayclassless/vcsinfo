@@ -1,0 +1,9 @@
+run:
+  modules-download-mode: readonly
+  tests: false
+  skip-dirs:
+    - .vendor
+
+linters:
+  enable-all: true
+
