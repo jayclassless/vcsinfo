@@ -15,6 +15,7 @@ ci-gha::
 	git config --global user.name "Fake Tester"
 	echo "[extensions]\nshelve=" > ~/.hgrc
 	${MAKE} test
+	@${GOBIN}/goveralls -coverprofile=coverage.out
 
 coverage::
 	@go tool cover -html=coverage.out

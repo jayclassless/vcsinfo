@@ -25,6 +25,7 @@ action "lint" {
 action "test" {
     uses = "./.github/actions/testenv"
     args = "make ci-gha"
+    secrets = ["COVERALLS_TOKEN"]
 }
 
 action "build" {
