@@ -17,35 +17,35 @@ builds:
       - goos: darwin
         goarch: 386
 
-archive:
-  replacements:
-    darwin: macos
+archives:
+  - replacements:
+      darwin: macos
 
 changelog:
   skip: true
 
-nfpm:
-  homepage: https://github.com/jayclassless/vcsinfo
-  maintainer: "Jason Simeone <jay@classless.net>"
-  description: A tool for retrieving/displaying basic information about the status of a VCS repository.
-  license: MIT
-  formats:
-    - deb
-    - rpm
-  recommends:
-    - bzr
-    - cvs
-    - git
-    - fossil
-    - darcs
-    - svn
-    - mercurial
+nfpms:
+  - homepage: https://github.com/jayclassless/vcsinfo
+    maintainer: "Jason Simeone <jay@classless.net>"
+    description: A tool for retrieving/displaying basic information about the status of a VCS repository.
+    license: MIT
+    formats:
+      - deb
+      - rpm
+    recommends:
+      - bzr
+      - cvs
+      - git
+      - fossil
+      - darcs
+      - svn
+      - mercurial
 
-brew:
-  github:
-    owner: jayclassless
-    name: homebrew-vcsinfo
-  folder: Formula
-  homepage: https://github.com/jayclassless/vcsinfo
-  description: A tool for retrieving/displaying basic information about the status of a VCS repository.
+brews:
+  - github:
+      owner: jayclassless
+      name: homebrew-vcsinfo
+    folder: Formula
+    homepage: https://github.com/jayclassless/vcsinfo
+    description: A tool for retrieving/displaying basic information about the status of a VCS repository.
 

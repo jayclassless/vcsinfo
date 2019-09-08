@@ -1,0 +1,29 @@
+on: push
+
+name: Test & Release
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+
+      - name: test
+        uses: ./.github/actions/testenv
+        env:
+          COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
+        with:
+          args: make ci-gha
+
+      - name: release-filter
+        uses: actions/bin/filter@master
+        with:
+          args: tag
+
+      - name: release
+        uses: docker://goreleaser/goreleaser:v0.117.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: release
+
