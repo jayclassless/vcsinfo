@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file. As best we
 can, this project will adhere to [Semantic Versioning](https://semver.org).
 
 
+## [0.3.2] - 2019-09-08
+
+### Fixed
+
+* Fixed an issue with detecting problems in newer versions of Git.
+
+### Changed
+
+* Upgraded to Go 1.13.
+
+
 ## [0.3.1] - 2019-03-03
 
 ### Fixed
