@@ -106,6 +106,9 @@ func (probe GitProbe) extractStashed(path string, info *VcsInfo) error {
 			// This generally means the repo doesn't have a commit yet.
 			return nil
 		}
+		if exitCode == 128 && strings.Contains(out[0], "must be run in a work tree") {
+			return nil
+		}
 		return err
 	}
 
