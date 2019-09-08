@@ -1,4 +1,4 @@
-FROM golang:1.12
+FROM golang:1.13
 
 RUN apt-get update && \
     apt-get install --yes --no-install-recommends --verbose-versions \
@@ -9,8 +9,7 @@ RUN apt-get update && \
         darcs \
         fossil \
         bzr && \
-    rm -rf /var/lib/apt/lists/* && \
-    curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s v1.15.0
+    rm -rf /var/lib/apt/lists/*
 
 ENV USER fake
 
