@@ -4,7 +4,7 @@ init::
 	@go mod download
 	@go install github.com/onsi/ginkgo/ginkgo
 	@go install github.com/mattn/goveralls
-	@go install github.com/mgechev/revive
+	#@go install github.com/mgechev/revive
 
 test::
 	@${GOBIN}/ginkgo -p -cover -coverprofile=coverage.out
@@ -21,8 +21,8 @@ ci-gha::
 coverage::
 	@go tool cover -html=coverage.out
 
-lint::
-	@${GOBIN}/revive --formatter stylish -exclude .vendor ./...
+#lint::
+#	@${GOBIN}/revive --formatter stylish -exclude .vendor ./...
 
 fmt::
 	@gofmt -s -w *.go cmd
