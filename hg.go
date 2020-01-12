@@ -31,10 +31,23 @@ func (probe HgProbe) IsRepositoryRoot(path string) (bool, error) {
 	return dirExists(filepath.Join(path, ".hg"))
 }
 
+func runHgCommand(workingDir string, command ...string) ([]string, error) {
+	out, err := runCommand(workingDir, append([]string{"hg"}, command[0:]...)...)
+
+	filtered := make([]string, 0)
+	for _, line := range out {
+		if !strings.HasPrefix(line, "not trusting file") {
+			filtered = append(filtered, line)
+		}
+	}
+
+	return filtered, err
+}
+
 func (probe HgProbe) extractStatus(path string, info *VcsInfo) error {
-	out, err := runCommand(
+	out, err := runHgCommand(
 		path,
-		"hg", "status",
+		"status",
 		"--modified", "--added", "--removed", "--unknown", "--removed", "--deleted",
 	)
 	if err != nil {
@@ -53,7 +66,7 @@ func (probe HgProbe) extractStatus(path string, info *VcsInfo) error {
 }
 
 func (probe HgProbe) extractCommitInfo(path string, info *VcsInfo) error {
-	out, err := runCommand(path, "hg", "identify", "--branch", "--num", "--id", "--debug")
+	out, err := runHgCommand(path, "identify", "--branch", "--num", "--id", "--debug")
 	if err != nil || len(out) == 0 {
 		return err
 	}
@@ -90,7 +103,7 @@ func (probe HgProbe) extractCommitInfo(path string, info *VcsInfo) error {
 }
 
 func (probe HgProbe) extractShelved(path string, info *VcsInfo) error {
-	out, err := runCommand(path, "hg", "shelve", "--list")
+	out, err := runHgCommand(path, "shelve", "--list")
 	if err != nil {
 		exitCode := getExitCode(err)
 		if exitCode == 255 {
