@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file. As best we
 can, this project will adhere to [Semantic Versioning](https://semver.org).
 
 
+## [0.3.5] - 2020-01-11
+
+### Fixed
+
+* Fixed an issue with Mercurial complaining about untrusted hgrc files.
+
+
 ## [0.3.2] - 2019-09-08
 
 ### Fixed
