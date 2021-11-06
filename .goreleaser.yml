@@ -13,9 +13,6 @@ builds:
       - freebsd
       - openbsd
       - netbsd
-    ignore:
-      - goos: darwin
-        goarch: 386
 
 archives:
   - replacements:
@@ -42,7 +39,7 @@ nfpms:
       - mercurial
 
 brews:
-  - github:
+  - tap:
       owner: jayclassless
       name: homebrew-vcsinfo
     folder: Formula
